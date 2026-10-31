@@ -1,0 +1,117 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="color-scheme" content="light dark">
+<title>My Tasks</title>
+<meta name="description" content="A simple local-first task manager with a focus timer and history.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<script>try{var p=localStorage.getItem('my-tasks-theme')||'auto',a=localStorage.getItem('my-tasks-accent'),r=document.documentElement,m={green:'forest',blue:'ocean',purple:'candy',pink:'candy'};a=m[a]||a;if(['forest','ocean','sunset','candy'].indexOf(a)<0)a='forest';r.dataset.theme=p==='auto'?(matchMedia('(prefers-color-scheme: dark)').matches?'dark':'light'):p;r.dataset.accent=a}catch(e){}</script>
+<link rel="stylesheet" href="style.css">
+<link rel="manifest" href="manifest.json"><meta name="theme-color" content="#ffffff">
+<link rel="icon" href="tasky.ico" sizes="any" />
+<link rel="icon" type="image/png" sizes="192x192" href="icon-192.png">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-title" content="Tasks">
+<link rel="apple-touch-icon" href="apple-touch-icon.png">
+</head>
+<body>
+<noscript>My Tasks needs JavaScript to run.</noscript>
+<header class="nav">
+  <div class="wrap navin">
+    <button type="button" class="brand" id="greet" title="Change your name"></button>
+    <div class="navr">
+      <input id="importFile" type="file" accept=".json,.csv,application/json,text/csv" hidden><button class="ghost ico" id="moreBtn" aria-label="More actions" title="More" aria-haspopup="listbox" aria-expanded="false"><svg viewBox="0 0 24 24" aria-hidden="true"><g fill="currentColor" stroke="none"><circle cx="5" cy="12" r="1.9"/><circle cx="12" cy="12" r="1.9"/><circle cx="19" cy="12" r="1.9"/></g></svg></button>
+      <div class="appear">
+        <button class="ghost ico" id="abtn" aria-label="Appearance" title="Appearance" aria-haspopup="true" aria-expanded="false"><svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="8.5"/><path d="M12 3.5a8.5 8.5 0 0 1 0 17z" fill="currentColor"/></svg></button>
+        <div class="apop" id="apop" role="dialog" aria-label="Appearance" hidden>
+          <span class="alab">Theme</span>
+          <div class="seg3"><button type="button" data-theme-pref="auto">Auto</button><button type="button" data-theme-pref="light">Light</button><button type="button" data-theme-pref="dark">Dark</button></div>
+          <span class="alab">Palette</span>
+          <div class="seg-acc"><button type="button" data-acc="forest">Forest</button><button type="button" data-acc="ocean">Ocean</button><button type="button" data-acc="sunset">Sunset</button><button type="button" data-acc="candy">Candy</button></div>
+        </div>
+      </div>
+    </div>
+  </div>
+</header>
+<main class="wrap">
+  <section class="hero">  
+    <div>
+      <h1>My Tasks</h1>
+      <p class="quote" id="quote">Make today amazing!</p>
+      <p class="date" id="date"></p>
+    </div>
+    <div class="stats" id="stats"></div>
+  </section>
+  <div class="add">
+    <input id="new" placeholder="What needs doing?" aria-label="New task">
+    <button type="button" class="idea-btn" id="ideaBtn" title="Get a fun random task idea"><span>Surprise me</span></button>
+    <button type="button" class="pill" id="pdate" aria-haspopup="dialog"><span id="ldate">Date</span><input id="newdate" type="hidden"></button>
+    <button type="button" class="pill" id="ptime" aria-haspopup="dialog"><span id="ltime">Time</span><input id="newtime" type="hidden"></button>
+    <button type="button" class="pill" id="prep" aria-label="Set repeat"><span id="lrep">Repeat</span></button>
+    <button type="button" class="pill" id="pprio" aria-label="Set priority"><span id="lprio">Priority</span></button>
+    <button type="button" class="pill" id="pcat" aria-label="Set category" aria-haspopup="listbox" aria-expanded="false"><span id="lcat">Category</span></button>
+    <button class="go" id="go">Add task</button>
+  </div>
+  <div class="toolbar">
+    <div class="tabs" id="tabs" role="tablist">
+      <button class="tab on" data-f="all" role="tab">All</button>
+      <button class="tab" data-f="today" role="tab">Today / Upcoming</button>
+      <button class="tab" data-f="todo" role="tab">To Do</button>
+      <button class="tab" data-f="prog" role="tab">In Progress</button>
+      <button class="tab" data-f="done" role="tab">Done</button>
+      <button class="tab" data-f="hist" role="tab">History</button>
+      <button class="tab" data-f="pomo" role="tab">Timer</button>
+      <button class="tab" data-f="ach" role="tab">Achievements</button>
+    </div>
+  </div>
+  <div class="filters" id="filters">
+    <label class="search"><input id="q" type="search" placeholder="Search your missions..." aria-label="Search tasks" autocomplete="off"><kbd>/</kbd><button type="button" class="qx" id="qx" aria-label="Clear search" hidden>&times;</button></label>
+    <div class="sortw"><span>Sort</span><button type="button" class="sbtn" id="sortbtn" aria-haspopup="listbox" aria-expanded="false" aria-label="Sort tasks"><span id="sortlab">Manual order</span></button></div>
+  </div>
+  <ul class="list" id="list"></ul>
+  <section class="hist" id="hist" hidden aria-label="Completed task history"></section>
+  <section class="pomo-sec" id="pomoSec" hidden aria-label="Pomodoro timer">
+    <div class="pomo-card">
+      <div class="pomo-display">
+        <div class="pomo-time" id="pomoTime">25:00</div>
+        <div class="pomo-label" id="pomoLabel">Focus</div>
+        <div class="pomo-grid" id="pomoGrid" aria-hidden="true"></div>
+      </div>
+      <div class="pomo-actions">
+        <button type="button" class="pomo-btn primary" id="pomoStart">Start</button>
+        <button type="button" class="pomo-btn" id="pomoReset">Reset</button>
+      </div>
+      <div class="pomo-modes">
+        <button type="button" class="pomo-mode on" data-mins="25" data-label="Focus">Focus · 25</button>
+        <button type="button" class="pomo-mode" data-mins="5" data-label="Break">Break · 5</button>
+        <button type="button" class="pomo-mode" data-mins="15" data-label="Long break">Long · 15</button>
+      </div>
+      <div class="pomo-custom">
+        <label for="pomoCustom">Custom minutes</label>
+        <div class="pomo-custom-row">
+          <input id="pomoCustom" type="number" min="1" max="180" step="1" placeholder="e.g. 40" inputmode="numeric" aria-label="Custom minutes">
+          <button type="button" class="pomo-btn" id="pomoSetCustom">Set</button>
+        </div>
+      </div>
+      <div class="pomo-stats">
+        <div class="pomo-stat"><b id="pomoSessions">0</b><span>Sessions today</span></div>
+        <div class="pomo-stat"><b id="pomoFocusMin">0</b><span>Focus minutes</span></div>
+      </div>
+      <p class="pomo-hint" id="pomoHint">Pick a task with its target icon, then start a session.</p>
+    </div>
+  </section>
+  <section class="ach-sec" id="achSec" hidden aria-label="Achievements"></section>
+</main>
+<footer class="wrap foot">Keep crushing your goals!<span class="keys"><kbd>N</kbd> new task &nbsp;·&nbsp; <kbd>/</kbd> search &nbsp;·&nbsp; <kbd>1</kbd>–<kbd>8</kbd> switch tabs</span></footer>
+<div id="modal"></div>
+<div id="cmodal"></div>
+<div id="upd" class="upd" role="status" hidden><span>A new version is ready.</span><button type="button" id="updgo">Reload</button><button type="button" class="updx" id="updx" aria-label="Dismiss">&times;</button></div>
+<div id="toast" class="toast" role="status" aria-live="polite" hidden><span id="tmsg"></span><button type="button" id="tundo">Undo</button><i class="tbar"></i></div>
+<script src="script.js"></script>
+</body>
+</html>
